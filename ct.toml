@@ -1,0 +1,6 @@
+# Transport & daemon
+transport = "auto"
+autostart = false
+
+# Slicing
+max_context_size = 16000

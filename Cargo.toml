@@ -1,0 +1,49 @@
+[workspace]
+members = [
+    "libs/ct-protocol",
+    "libs/ct-core",
+    "libs/ct-db",
+    "libs/ct-indexer",
+    "bins/ct-daemon",
+    "bins/ct",
+    "bins/ctrepl",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["ct team"]
+license = "MIT OR Apache-2.0"
+
+[workspace.dependencies]
+# Internal crates
+ct-protocol = { path = "libs/ct-protocol" }
+ct-core = { path = "libs/ct-core" }
+ct-db = { path = "libs/ct-db" }
+ct-indexer = { path = "libs/ct-indexer" }
+
+# External dependencies
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.41", features = ["full"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+anyhow = "1.0"
+thiserror = "2.0"
+clap = { version = "4.5", features = ["derive", "cargo", "env"] }
+directories = "5.0"
+toml = "0.8"
+blake3 = "1.5"
+rusqlite = { version = "0.32", features = ["bundled", "blob"] }
+notify = "7.0"
+uuid = { version = "1.11", features = ["v4", "serde"] }
+hex = "0.4"
+chrono = { version = "0.4", features = ["serde"] }
+
+# Additional dependencies for REPL
+rustyline = "14.0"
+
+# Test dependencies
+tempfile = "3.14"
+pretty_assertions = "1.4"

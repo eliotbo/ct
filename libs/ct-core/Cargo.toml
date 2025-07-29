@@ -1,0 +1,21 @@
+[package]
+name = "ct-core"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+ct-protocol.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+blake3.workspace = true
+thiserror.workspace = true
+directories.workspace = true
+toml.workspace = true
+tokio.workspace = true
+hex = "0.4"
+
+[dev-dependencies]
+tempfile = "3.14"
+pretty_assertions = "1.4"

@@ -1,0 +1,33 @@
+[package]
+name = "ct-daemon"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "ct-daemon"
+path = "src/main.rs"
+
+[dependencies]
+ct-protocol.workspace = true
+ct-core.workspace = true
+ct-db.workspace = true
+ct-indexer.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+clap.workspace = true
+anyhow.workspace = true
+serde_json.workspace = true
+uuid.workspace = true
+chrono.workspace = true
+
+[target.'cfg(unix)'.dependencies]
+tokio = { workspace = true, features = ["net"] }
+
+[target.'cfg(windows)'.dependencies]
+tokio = { workspace = true, features = ["net"] }
+
+[dev-dependencies]
+tempfile = "3.14"
