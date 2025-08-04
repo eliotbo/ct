@@ -1,0 +1,14 @@
+[package]
+name = "simple_test"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "simple_test"
+path = "src/lib.rs"
+
+[[bin]]
+name = "simple_test"
+path = "src/main.rs"
+
+[dependencies]

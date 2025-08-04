@@ -228,6 +228,7 @@ impl Repl {
             vis: None,
             unimplemented: None,
             todo: None,
+            all: None,
         };
         
         let response = self.send_command(cmd).await?;

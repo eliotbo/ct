@@ -55,6 +55,12 @@ pub struct Config {
     
     #[serde(default = "default_watcher_debounce_ms")]
     pub watcher_debounce_ms: u64,
+    
+    #[serde(default = "default_auto_clean_on_start")]
+    pub auto_clean_on_start: bool,
+    
+    #[serde(default = "default_cache_ttl_hours")]
+    pub cache_ttl_hours: u32,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -86,6 +92,8 @@ impl Default for Config {
             bench_queries: default_bench_queries(),
             bench_duration_s: default_bench_duration_s(),
             watcher_debounce_ms: default_watcher_debounce_ms(),
+            auto_clean_on_start: default_auto_clean_on_start(),
+            cache_ttl_hours: default_cache_ttl_hours(),
         }
     }
 }
@@ -148,6 +156,14 @@ fn default_bench_duration_s() -> u32 {
 
 fn default_watcher_debounce_ms() -> u64 {
     300
+}
+
+fn default_auto_clean_on_start() -> bool {
+    false
+}
+
+fn default_cache_ttl_hours() -> u32 {
+    24
 }
 
 impl Config {

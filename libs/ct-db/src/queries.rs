@@ -13,10 +13,10 @@ pub fn find_symbols_by_name(
     let mut query = String::from(
         "SELECT id, symbol_id, crate_id, file_id, path, name, kind, visibility,
                 signature, docs, status, span_start, span_end, def_hash
-         FROM symbols WHERE name LIKE ?"
+         FROM symbols WHERE name = ?"
     );
     
-    let mut params: Vec<Box<dyn rusqlite::ToSql>> = vec![Box::new(format!("%{}%", name))];
+    let mut params: Vec<Box<dyn rusqlite::ToSql>> = vec![Box::new(name.to_string())];
     
     if let Some(k) = kind {
         query.push_str(" AND kind = ?");

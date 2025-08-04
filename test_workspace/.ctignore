@@ -1,0 +1,5 @@
+# Ignore test modules
+crate_b::tests
+
+# Ignore specific internal modules
+shared::constants

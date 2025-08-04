@@ -48,6 +48,10 @@ enum Commands {
         /// Show only todo symbols
         #[arg(short = 't', long)]
         todo: bool,
+        
+        /// Show all fields (by default only path and span are shown)
+        #[arg(short = 'a', long)]
+        all: bool,
     },
     
     /// Show documentation for a symbol
@@ -165,6 +169,18 @@ enum Commands {
         /// Target triple
         #[arg(long)]
         target: Option<String>,
+        
+        /// Module path to filter (e.g. "crate::module")
+        #[arg(long)]
+        module: Option<String>,
+        
+        /// Struct within the module to focus on
+        #[arg(long, name = "struct")]
+        struct_name: Option<String>,
+        
+        /// Include derive trait implementations (clone, serialize, etc.)
+        #[arg(long)]
+        include_derives: bool,
     },
     
     /// Show implementation status
@@ -200,6 +216,46 @@ enum Commands {
         duration: u32,
     },
     
+    /// Manage the ct-daemon
+    Daemon {
+        #[command(subcommand)]
+        command: DaemonCommand,
+    },
+}
+
+#[derive(Subcommand)]
+enum DaemonCommand {
+    /// Start the daemon
+    Start {
+        /// Index directory (defaults to current directory)
+        #[arg(long, short = 'i', default_value = ".")]
+        idx: String,
+        
+        /// Clean cache before starting
+        #[arg(long)]
+        clean: bool,
+        
+        /// Transport type (auto, unix, pipe, tcp)
+        #[arg(long, default_value = "auto")]
+        transport: String,
+    },
+    
+    /// Stop the daemon
+    Stop,
+    
+    /// Restart the daemon (stop, clean cache, start)
+    Restart {
+        /// Index directory (defaults to current directory)
+        #[arg(long, short = 'i', default_value = ".")]
+        idx: String,
+        
+        /// Transport type (auto, unix, pipe, tcp)
+        #[arg(long, default_value = "auto")]
+        transport: String,
+    },
+    
+    /// Show daemon status
+    Status,
 }
 
 #[tokio::main]
@@ -219,8 +275,8 @@ async fn main() {
 
 async fn run(cli: Cli) -> anyhow::Result<u8> {
     match cli.command {
-        Commands::Find { query, kind, vis, unimplemented, todo } => {
-            commands::find(query, kind, vis, unimplemented, todo, cli.format, cli.pretty).await
+        Commands::Find { query, kind, vis, unimplemented, todo, all } => {
+            commands::find(query, kind, vis, unimplemented, todo, all, cli.format, cli.pretty).await
         }
         Commands::Doc { path, docs, docs_all, vis, unimplemented, todo } => {
             let include_docs = docs || docs_all;
@@ -233,10 +289,10 @@ async fn run(cli: Cli) -> anyhow::Result<u8> {
         Commands::Export { path, bundle, docs, docs_all, expansion, impl_parents, vis, unimplemented, todo, with_source, max_size } => {
             let include_docs = docs || docs_all;
             let expansion_str = expansion.join("");
-            commands::export(path, bundle, expansion_str, include_docs, impl_parents, vis, unimplemented, todo, with_source, max_size, cli.format, cli.pretty).await
+            commands::export(vec![path], bundle, expansion_str, include_docs, impl_parents, vis, unimplemented, todo, with_source, max_size, cli.format, cli.pretty).await
         }
-        Commands::Reindex { features, target } => {
-            commands::reindex(features, target, cli.format, cli.pretty).await
+        Commands::Reindex { features, target, module, struct_name, include_derives } => {
+            commands::reindex(features, target, module, struct_name, include_derives, cli.format, cli.pretty).await
         }
         Commands::Status { vis, unimplemented, todo } => {
             commands::status(vis, unimplemented, todo, cli.format, cli.pretty).await
@@ -246,6 +302,9 @@ async fn run(cli: Cli) -> anyhow::Result<u8> {
         }
         Commands::Bench { queries, warmup, duration } => {
             commands::bench(queries, warmup, duration, cli.format, cli.pretty).await
+        }
+        Commands::Daemon { command } => {
+            commands::daemon(command).await
         }
     }
 }

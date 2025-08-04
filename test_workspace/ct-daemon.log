@@ -1,0 +1,15 @@
+[2m2025-07-30T06:07:07.510146Z[0m [32m INFO[0m [2mct_daemon[0m[2m:[0m Starting ct-daemon for workspace: "/workspace/workspace/ct/test_workspace"
+[2m2025-07-30T06:07:07.510248Z[0m [32m INFO[0m [2mct_daemon[0m[2m:[0m Opening database at "/home/developer/.cache/ct/blake3:0371ba5380e06eb5/symbols.sqlite"
+[2m2025-07-30T06:07:07.525140Z[0m [32m INFO[0m [2mct_daemon[0m[2m:[0m Starting initial indexing...
+name: crate_a
+version: 0.1.0
+name: shared
+version: 0.1.0
+name: crate_b
+version: 0.1.0
+[2m2025-07-30T06:07:08.246804Z[0m [32m INFO[0m [2mct_daemon[0m[2m:[0m Initial indexing complete: 3 crates, 3 files, 97 symbols in 721ms
+[2m2025-07-30T06:07:08.246946Z[0m [32m INFO[0m [2mct_daemon::server[0m[2m:[0m IPC server listening on Unix socket: /tmp/ctd-blake3:0.sock
+[2m2025-07-30T06:07:08.246959Z[0m [32m INFO[0m [2mct_daemon[0m[2m:[0m Daemon started, waiting for shutdown signal...
+[2m2025-07-30T06:09:43.374235Z[0m [32m INFO[0m [2mct_daemon[0m[2m:[0m Received SIGTERM, shutting down...
+[2m2025-07-30T06:09:43.374281Z[0m [32m INFO[0m [2mct_daemon[0m[2m:[0m Daemon shutdown complete
+[2m2025-07-30T06:09:43.374341Z[0m [32m INFO[0m [2mct_daemon::server[0m[2m:[0m Unix server shutting down

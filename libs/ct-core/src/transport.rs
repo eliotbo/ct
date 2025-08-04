@@ -1,13 +1,14 @@
 use crate::config::{Config, Transport as TransportType};
 use crate::{CoreError, Result};
-use ct_protocol::{Request, Response, serialize_message, deserialize_message};
+use ct_protocol::{deserialize_message, serialize_message, Request, Response};
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader};
 
-#[cfg(unix)]
-use tokio::net::UnixStream;
 #[cfg(windows)]
 use tokio::net::windows::named_pipe::ClientOptions;
+#[cfg(unix)]
+use tokio::net::UnixStream;
 
+/// Represents a transport stream for IPC communication
 pub enum TransportStream {
     #[cfg(unix)]
     Unix(UnixStream),
@@ -22,7 +23,8 @@ impl TransportStream {
             #[cfg(unix)]
             TransportType::Unix => {
                 let path = config.get_socket_path(workspace_fingerprint);
-                let stream = UnixStream::connect(&path).await
+                let stream = UnixStream::connect(&path)
+                    .await
                     .map_err(|e| CoreError::Io(e))?;
                 Ok(TransportStream::Unix(stream))
             }
@@ -35,7 +37,8 @@ impl TransportStream {
                 Ok(TransportStream::Pipe(client))
             }
             TransportType::Tcp => {
-                let stream = tokio::net::TcpStream::connect(&config.tcp_addr).await
+                let stream = tokio::net::TcpStream::connect(&config.tcp_addr)
+                    .await
                     .map_err(|e| CoreError::Io(e))?;
                 Ok(TransportStream::Tcp(stream))
             }
@@ -47,7 +50,7 @@ impl TransportStream {
         let msg = serialize_message(request)
             .map_err(|e| CoreError::Io(std::io::Error::new(std::io::ErrorKind::InvalidData, e)))?;
         let msg = format!("{}\n", msg);
-        
+
         match self {
             #[cfg(unix)]
             TransportStream::Unix(stream) => {
@@ -128,7 +131,7 @@ mod tests {
     fn test_transport_type() {
         let config = Config::default();
         let transport = config.get_effective_transport();
-        
+
         #[cfg(unix)]
         assert_eq!(transport, TransportType::Unix);
         #[cfg(windows)]

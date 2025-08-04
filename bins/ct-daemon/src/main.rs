@@ -32,6 +32,10 @@ struct Args {
     /// Run once and exit
     #[arg(long)]
     once: bool,
+    
+    /// Clean cache before starting
+    #[arg(long)]
+    clean: bool,
 }
 
 #[tokio::main]
@@ -59,6 +63,23 @@ async fn main() -> anyhow::Result<()> {
     
     // Create cache directory
     let cache_dir = config.get_cache_dir(&workspace_fingerprint);
+    
+    // Clean cache if requested or if auto_clean_on_start is enabled
+    if (args.clean || config.auto_clean_on_start) && cache_dir.exists() {
+        info!("Cleaning cache directory: {:?}", cache_dir);
+        std::fs::remove_dir_all(&cache_dir)?;
+    }
+    
+    // Remove existing socket file if it exists
+    #[cfg(unix)]
+    {
+        let socket_path = config.get_socket_path(&workspace_fingerprint);
+        if std::path::Path::new(&socket_path).exists() {
+            info!("Removing existing socket file: {}", socket_path);
+            std::fs::remove_file(&socket_path)?;
+        }
+    }
+    
     std::fs::create_dir_all(&cache_dir)?;
     
     // Open database
@@ -70,11 +91,18 @@ async fn main() -> anyhow::Result<()> {
     let mut indexer = Indexer::new(workspace_root.clone(), db);
     
     info!("Starting initial indexing...");
-    let stats = indexer.index_workspace().await?;
-    info!(
-        "Initial indexing complete: {} crates, {} files, {} symbols in {}ms",
-        stats.crates_indexed, stats.files_indexed, stats.symbols_indexed, stats.duration_ms
-    );
+    match indexer.index_workspace().await {
+        Ok(stats) => {
+            info!(
+                "Initial indexing complete: {} crates, {} files, {} symbols in {}ms",
+                stats.crates_indexed, stats.files_indexed, stats.symbols_indexed, stats.duration_ms
+            );
+        }
+        Err(e) => {
+            eprintln!("WARNING: Initial indexing failed: {}. The daemon will start but some features may be limited.", e);
+            eprintln!("This usually happens when 'cargo +nightly' is not available or the project has compilation issues.");
+        }
+    }
     
     if args.once {
         info!("Running in --once mode, exiting");

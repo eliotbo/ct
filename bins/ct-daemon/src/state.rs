@@ -32,8 +32,8 @@ impl DaemonState {
         let start = std::time::Instant::now();
         
         let result = match request.cmd {
-            Command::Find { name, path, kind, vis, unimplemented, todo } => {
-                self.handle_find(name, path, kind, vis, unimplemented, todo).await
+            Command::Find { name, path, kind, vis, unimplemented, todo, all } => {
+                self.handle_find(name, path, kind, vis, unimplemented, todo, all).await
             }
             Command::Doc { path, include_docs, vis, unimplemented, todo } => {
                 self.handle_doc(path, include_docs, vis, unimplemented, todo).await
@@ -44,8 +44,8 @@ impl DaemonState {
             Command::Export { path, bundle, expansion, include_docs, vis, unimplemented, todo, impl_parents, with_source } => {
                 self.handle_export(path, bundle, expansion, include_docs, vis, unimplemented, todo, impl_parents, with_source).await
             }
-            Command::Reindex { features, target } => {
-                self.handle_reindex(features, target).await
+            Command::Reindex { features, target, module, struct_name, include_derives } => {
+                self.handle_reindex(features, target, module, struct_name, include_derives).await
             }
             Command::Status { vis, unimplemented, todo } => {
                 self.handle_status(vis, unimplemented, todo).await
@@ -84,6 +84,7 @@ impl DaemonState {
         vis: Option<String>,
         unimplemented: Option<bool>,
         todo: Option<bool>,
+        all: Option<bool>,
     ) -> Result<Response, (String, ErrorCode)> {
         if name.is_none() && path.is_none() {
             return Err(("Must provide either name or path".to_string(), ErrorCode::InvalidArg));
@@ -114,10 +115,25 @@ impl DaemonState {
             vec![]
         };
         
+        // Filter response based on 'all' flag
+        let items: Vec<serde_json::Value> = if all.unwrap_or(false) {
+            // Return all fields
+            symbols.into_iter().map(|s| serde_json::to_value(s).unwrap()).collect()
+        } else {
+            // Return only path and span fields
+            symbols.into_iter().map(|s| {
+                json!({
+                    "path": s.path,
+                    "span_start": s.span_start,
+                    "span_end": s.span_end,
+                })
+            }).collect()
+        };
+        
         Ok(Response::success(
             "".to_string(), // Request ID will be filled by caller
             json!({
-                "items": symbols,
+                "items": items,
             }),
         ))
     }
@@ -200,13 +216,27 @@ impl DaemonState {
         &self,
         features: Option<Vec<String>>,
         target: Option<String>,
+        module: Option<String>,
+        struct_name: Option<String>,
+        include_derives: bool,
     ) -> Result<Response, (String, ErrorCode)> {
         // Stub implementation
-        info!("Reindexing requested with features: {:?}, target: {:?}", features, target);
+        info!("Reindexing requested with features: {:?}, target: {:?}, module: {:?}, struct: {:?}, include_derives: {}", 
+              features, target, module, struct_name, include_derives);
+        
+        // TODO: Pass filtering options to the indexer when reindexing
+        // let mut indexer = Indexer::new(workspace_root, db)
+        //     .with_filters(module, struct_name, include_derives);
+        
         Ok(Response::success(
             "".to_string(),
             json!({
                 "status": "reindex_started",
+                "filters": {
+                    "module": module,
+                    "struct_name": struct_name,
+                    "include_derives": include_derives
+                }
             }),
         ))
     }

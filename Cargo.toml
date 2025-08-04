@@ -6,7 +6,7 @@ members = [
     "libs/ct-indexer",
     "bins/ct-daemon",
     "bins/ct",
-    "bins/ctrepl",
+    "bins/ctrepl", "minimal_test",
 ]
 resolver = "2"
 
@@ -43,6 +43,7 @@ chrono = { version = "0.4", features = ["serde"] }
 
 # Additional dependencies for REPL
 rustyline = "14.0"
+rustdoc-types = "0.35"
 
 # Test dependencies
 tempfile = "3.14"

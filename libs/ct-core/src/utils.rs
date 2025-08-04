@@ -75,6 +75,7 @@ pub const EXIT_OVER_MAX: u8 = 3;
 pub const EXIT_DAEMON_UNAVAILABLE: u8 = 4;
 pub const EXIT_INDEX_MISMATCH: u8 = 5;
 pub const EXIT_INTERNAL_ERROR: u8 = 6;
+pub const EXIT_DAEMON_ALREADY_RUNNING: u8 = 7;
 
 #[cfg(test)]
 mod tests {

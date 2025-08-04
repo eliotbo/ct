@@ -356,6 +356,7 @@ dependencies = [
  "ct-db",
  "notify",
  "pretty_assertions",
+ "rustdoc-types",
  "serde",
  "serde_json",
  "tempfile",
@@ -757,6 +758,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32a282da65faaf38286cf3be983213fcf1d2e2a58700e808f83f4ea9a4804bc0"
 
 [[package]]
+name = "minimal"
+version = "0.1.0"
+
+[[package]]
 name = "miniz_oxide"
 version = "0.8.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1040,6 +1045,15 @@ name = "rustc-demangle"
 version = "0.1.26"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56f7d92ca342cea22a06f2121d944b4fd82af56988c270852495420f961d4ace"
+
+[[package]]
+name = "rustdoc-types"
+version = "0.35.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bf583db9958b3161d7980a56a8ee3c25e1a40708b81259be72584b7e0ea07c95"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "rustix"

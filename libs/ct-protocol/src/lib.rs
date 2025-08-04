@@ -31,6 +31,8 @@ pub enum Command {
         unimplemented: Option<bool>,
         #[serde(skip_serializing_if = "Option::is_none")]
         todo: Option<bool>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        all: Option<bool>,
     },
     Doc {
         path: String,
@@ -82,6 +84,12 @@ pub enum Command {
         features: Option<Vec<String>>,
         #[serde(skip_serializing_if = "Option::is_none")]
         target: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        module: Option<String>,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        struct_name: Option<String>,
+        #[serde(default)]
+        include_derives: bool,
     },
     Status {
         #[serde(skip_serializing_if = "Option::is_none")]
@@ -252,6 +260,7 @@ mod tests {
                 vis: Some("public".to_string()),
                 unimplemented: None,
                 todo: None,
+                all: None,
             },
             request_id: "test-id".to_string(),
             protocol_version: 1,
